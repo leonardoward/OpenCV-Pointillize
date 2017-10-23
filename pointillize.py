@@ -43,6 +43,9 @@ def detectNewCircleColision(pxNewCircle, pyNewCircle, pxGlobal, pyGlobal):
                    return True
     return False
 
+def is_similar(image1, image2):
+    return image1.shape == image2.shape and not(np.bitwise_xor(image1,image2).any())
+
 ################################################################################
 ##                          Argument parser                                   ##
 ################################################################################
@@ -79,6 +82,7 @@ if(debug):
 
 pointillizeImage = createRGBImage(rows,columns)
 pointillizeImage = cv2.bitwise_not(pointillizeImage)
+pointillizeGrayImage = createGrayImage(rows,columns)
 
 pxAllChangedPixels = []
 pyAllChangedPixels = []
@@ -96,15 +100,18 @@ for i in range(cycles):
 
     # New circle's pixels
     cv2.circle(addedCircleImage, (col,row), radius, 255, -1)
-    pxChangedPixels, pyChangedPixels = getChangedPixels(addedCircleImage)
+    # pxChangedPixels, pyChangedPixels = getChangedPixels(addedCircleImage)
+
+    xorImage = cv2.bitwise_xor(addedCircleImage, pointillizeGrayImage, mask = addedCircleImage)
 
     # Check if new Circle collides with another pixels
-    if(detectNewCircleColision(pxChangedPixels, pyChangedPixels, pxAllChangedPixels, pyAllChangedPixels) == False):
+    if(is_similar(xorImage, addedCircleImage)):
         if(debug):print("Doesn't cause collision")
         # Add new circle to global array
-        pxAllChangedPixels.append(pxChangedPixels)
-        pyAllChangedPixels.append(pyChangedPixels)
+        # pxAllChangedPixels.append(pxChangedPixels)
+        # pyAllChangedPixels.append(pyChangedPixels)
         # Draw pixel in final image
+        cv2.circle(pointillizeGrayImage, (col,row), radius, 255, -1)
         cv2.circle(pointillizeImage, (col,row), radius, color, -1)
     else:
         if(debug):print("Creates collision")
@@ -113,5 +120,5 @@ for i in range(cycles):
 
 cv2.imshow("Image", image)
 cv2.imshow("Pointillize RGB", pointillizeImage)
-cv2.imwrite("/out/resultado.png", pointillizeImage)
+cv2.imwrite("resultado.png", pointillizeImage)
 cv2.waitKey(0)
