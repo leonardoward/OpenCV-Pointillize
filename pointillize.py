@@ -118,7 +118,7 @@ for i in range(cycles):
 
 # print(pxAllChangedPixels)
 
-cv2.imshow("Image", image)
-cv2.imshow("Pointillize RGB", pointillizeImage)
+# cv2.imshow("Image", image)
+# cv2.imshow("Pointillize RGB", pointillizeImage)
 cv2.imwrite("resultado.png", pointillizeImage)
 cv2.waitKey(0)
